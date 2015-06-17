@@ -72,7 +72,7 @@ public class MessageParsingMDCLayout extends Layout {
 				event.getThreadName(),
 				event.getThrowableInformation(),
 				event.getNDC(),
-				event.getLocationInformation(),
+				null,
 				properties);
 		
 		return layout.format(event);	
