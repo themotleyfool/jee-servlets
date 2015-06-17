@@ -28,6 +28,7 @@ public class RequestHeaderMDCFilterTests extends TestCase {
 	FilterConfig filterConfig;
 	RequestHeaderMDCFilter filter;
 	
+	static String mdcKey;
 	static Object observedMDCValue;
 	
 	@Override
@@ -38,6 +39,7 @@ public class RequestHeaderMDCFilterTests extends TestCase {
 		chain = Mockito.mock(MDCCheckingFilterChain.class);
 		filterConfig = Mockito.mock(FilterConfig.class);
 		filter = new RequestHeaderMDCFilter();
+		mdcKey = EXAMPLE_HEADER_NAME;
 	}
 	
 	public void testInitParsesHeaderNames() throws Exception {
@@ -74,6 +76,17 @@ public class RequestHeaderMDCFilterTests extends TestCase {
 		assertEquals("thing value", observedMDCValue);
 	}
 	
+	public void testBindsHeaderWithCustomKey() throws Exception {
+		mdcKey = "thingy";
+		filter.addHeader(EXAMPLE_HEADER_NAME + ":thingy");
+		Mockito.when(request.getHeader(EXAMPLE_HEADER_NAME)).thenReturn("thing value");
+		Mockito.doCallRealMethod().when(chain).doFilter(request, response);
+		
+		filter.doFilter(request, response, chain);
+		
+		assertEquals("thing value", observedMDCValue);
+	}
+	
 	public void testSkipsNullHeaderValue() throws Exception {
 		filter.addHeader(EXAMPLE_HEADER_NAME);
 		Mockito.when(request.getHeader(EXAMPLE_HEADER_NAME)).thenReturn(null);
@@ -83,7 +96,7 @@ public class RequestHeaderMDCFilterTests extends TestCase {
 	
 	abstract class MDCCheckingFilterChain implements FilterChain {
 		public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
-			observedMDCValue = MDC.get(EXAMPLE_HEADER_NAME);
+			observedMDCValue = MDC.get(mdcKey);
 		}
 	}
 }

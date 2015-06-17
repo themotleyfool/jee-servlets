@@ -36,13 +36,15 @@ This filter binds headers from an http servlet request into log4j's
 Mapped Diagnostic Context (MDC) so that header values can be logged
 in statements made while servicing the request.
 
+Multiple headers can be bound by delimiting them with commas.
+
 ```xml
 <filter>
   <filter-name>RequestHeaderMDCFilter</filter-name>
   <filter-class>com.fool.servlet.RequestHeaderMDCFilter</filter-class>
   <init-param>
     <param-name>headers</param-name>
-    <param-value>X-Request-ID</param-value>
+    <param-value>X-Request-ID, User-Agent</param-value>
   </init-param>
 </filter>
    
@@ -56,4 +58,19 @@ Then, in log4j.properties (or elsewhere):
 
     log4j.appender.file.layout.ConversionPattern=%-5p - %d{yyyy-MM-dd HH:mm:ss.SSS}; %C; RequestId: %X{X-Request-ID} %m\n
 
+The mdc property name can be something other than the header name by using `header:mdc_key` pairs:
 
+```xml
+<filter>
+  <filter-name>RequestHeaderMDCFilter</filter-name>
+  <filter-class>com.fool.servlet.RequestHeaderMDCFilter</filter-class>
+  <init-param>
+    <param-name>headers</param-name>
+    <param-value>X-Request-ID:request_id</param-value>
+  </init-param>
+</filter>
+```
+
+Then, in log4j.properties (or elsewhere):
+
+    log4j.appender.file.layout.ConversionPattern=%-5p - %d{yyyy-MM-dd HH:mm:ss.SSS}; %C; request_id:%X{request_id} %m\n
