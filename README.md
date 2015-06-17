@@ -74,3 +74,28 @@ The mdc property name can be something other than the header name by using `head
 Then, in log4j.properties (or elsewhere):
 
     log4j.appender.file.layout.ConversionPattern=%-5p - %d{yyyy-MM-dd HH:mm:ss.SSS}; %C; request_id:%X{request_id} %m\n
+
+## MessageParsingMDCLayout
+
+This library also includes a delegating log4j layout that uses regex to
+parse a formatted message into MDC properties for structured logging.
+
+In practice this layout was developed to give structure to Solr logs so that
+metadata like hits, query time and status can be sent as separate fields in
+a JSON-formatted output suitable for integration with LogStash.
+
+Example configuration:
+
+```
+#- size rotation with log cleanup.
+log4j.appender.file=org.apache.log4j.RollingFileAppender
+log4j.appender.file.MaxFileSize=4MB
+log4j.appender.file.MaxBackupIndex=9
+
+#- File to log to and log format
+log4j.appender.file.File=${solr.log}/solr.log
+log4j.appender.file.layout=com.fool.log4j.layout.MessageParsingMDCLayout
+log4j.appender.file.layout.regex=^\\[([^\\]]+)\\] webapp=([\\S]+) path=([\\S]+) params=([\\S]+) (?:hits=([\\d]+) )?status=([\\d]+) QTime=([\\d]+).*$
+log4j.appender.file.layout.fieldNames=core, webapp, path, params, hits, status, qtime
+log4j.appender.file.layout.layout=net.logstash.log4j.JSONEventLayoutV1
+```
