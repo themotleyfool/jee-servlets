@@ -1,5 +1,7 @@
 package com.fool.servlet;
 
+import java.net.InetAddress;
+
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +36,7 @@ public class PoweredByResponseHeaderFilterTests extends TestCase {
 		
 		filter.doFilter(request, response, chain);
 		
-		Mockito.verify(response).addHeader("X-Powered-By", "snorkle01.example.com:8087");
+		Mockito.verify(response).addHeader("X-Powered-By", filter.getHost() + ":8087");
 	}
 	
 	public void testInitOverridesDefaultHeaderName() throws Exception {
@@ -43,5 +45,11 @@ public class PoweredByResponseHeaderFilterTests extends TestCase {
 		filter.init(filterConfig);
 		
 		assertEquals("X-Served-By", filter.getHeaderName());
+	}
+	
+	public void testInitSetsHost() throws Exception {
+		filter.init(filterConfig);
+		
+		assertEquals(InetAddress.getLocalHost().getHostName(), filter.getHost());
 	}
 }

@@ -1,6 +1,8 @@
 package com.fool.servlet;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -13,10 +15,11 @@ import javax.servlet.http.HttpServletResponse;
 public class PoweredByResponseHeaderFilter implements Filter
 {
 	private String headerName = "X-Powered-By";
+	private String host = "localhost";
 	
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
-		httpResponse.addHeader(headerName, request.getServerName() + ":" + request.getServerPort());
+		httpResponse.addHeader(headerName, host + ":" + request.getServerPort());
 		
 		filterChain.doFilter(request, response);
 	}
@@ -26,6 +29,13 @@ public class PoweredByResponseHeaderFilter implements Filter
 		if (headerName != null && !"".equals(headerName)) {
 			this.headerName = headerName;
 		}
+		
+		try {
+			host = InetAddress.getLocalHost().getHostName();
+		} catch (UnknownHostException e) {
+			// ignore and use default "localhost"
+		}
+				
 	}
 	
 	public void destroy() {
@@ -33,5 +43,9 @@ public class PoweredByResponseHeaderFilter implements Filter
 	
 	public String getHeaderName() {
 		return headerName;
+	}
+	
+	public String getHost() {
+		return host;
 	}
 }
