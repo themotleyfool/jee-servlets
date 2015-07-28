@@ -32,7 +32,8 @@ public class PoweredByResponseHeaderFilterTests extends TestCase {
 	
 	public void testSetsHeader() throws Exception {
 		Mockito.when(request.getServerName()).thenReturn("snorkle01.example.com");
-		Mockito.when(request.getServerPort()).thenReturn(8087);
+		Mockito.when(request.getServerPort()).thenReturn(80);
+		Mockito.when(request.getLocalPort()).thenReturn(8087);
 		
 		filter.doFilter(request, response, chain);
 		

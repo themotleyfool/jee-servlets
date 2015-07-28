@@ -19,7 +19,7 @@ public class PoweredByResponseHeaderFilter implements Filter
 	
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
-		httpResponse.addHeader(headerName, host + ":" + request.getServerPort());
+		httpResponse.addHeader(headerName, host + ":" + request.getLocalPort());
 		
 		filterChain.doFilter(request, response);
 	}
