@@ -25,7 +25,7 @@ public class GZipRequestFilter implements Filter
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		
 		String contentEncoding = httpRequest.getHeader("Content-Encoding");
-		if (contentEncoding != null && contentEncoding.toLowerCase() == "gzip") {
+		if (contentEncoding != null && "gzip".equalsIgnoreCase(contentEncoding)) {
 			request = new HttpServletRequestWrapper(httpRequest) {
 				@Override
 				public ServletInputStream getInputStream() throws IOException {
